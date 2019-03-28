@@ -56,11 +56,9 @@ class Robokassa extends Simpla
                 "sum" => $purchase->price * $purchase->amount,
                 "payment_method" => "full_payment",
                 "payment_object" => "commodity",
-                "tax" => ($receipt['sno'] == 'osn') ? $payment_settings['tax'] : 'none'
+                "tax" => ($payment_settings['sno'] == 'osn') ? $payment_settings['tax'] : 'none'
             ];
-		}
-
-        var_dump($payment_settings['tax']);
+        }
 
         $receipt = json_encode($receipt);
 
