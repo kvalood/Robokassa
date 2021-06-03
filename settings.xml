@@ -93,4 +93,49 @@
             <value>vat120</value>
         </options>
     </settings>
+
+    <settings>
+        <variable>robokassa_delivery</variable>
+        <name>Стоимость доставки включить</name>
+        <options>
+            <name>в стоимость товаров</name>
+            <value>include_item</value>
+        </options>
+        <options>
+            <name>как отдельную позицию в чеке</name>
+            <value>item</value>
+        </options>
+    </settings>
+
+    <settings>
+        <variable>robokassa_order_status</variable>
+        <name>После оплаты сменить статус заказа на (ID статуса)</name>
+    </settings>
+
+    <settings>
+        <variable>robokassa_check_availability</variable>
+        <name>Проверять наличие товара в callback.php? Если товара нет, будет ошибка.</name>
+        <options>
+            <name>да</name>
+            <value>1</value>
+        </options>
+        <options>
+            <name>нет</name>
+            <value>0</value>
+        </options>
+    </settings>
+
+    <settings>
+        <variable>robokassa_debug</variable>
+        <name>Информация об отладке (видно админу)</name>
+        <options>
+            <name>нет</name>
+            <value>0</value>
+        </options>
+        <options>
+            <name>да</name>
+            <value>1</value>
+        </options>
+    </settings>
+
 </module>

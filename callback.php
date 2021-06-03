@@ -16,7 +16,6 @@ chdir ('../../');
 require_once('api/Simpla.php');
 $simpla = new Simpla();
 
-
 // Кошелек продавца
 // Кошелек продавца, на который покупатель совершил платеж. Формат - буква и 12 цифр.
 $merchant_purse = $_POST['LMI_PAYEE_PURSE'];
@@ -65,23 +64,36 @@ if($amount != $simpla->money->convert($order->total_price, $method->currency_id,
 ////////////////////////////////////
 // Проверка наличия товара
 ////////////////////////////////////
-$purchases = $simpla->orders->get_purchases(array('order_id'=>intval($order->id)));
-foreach($purchases as $purchase)
-{
-	$variant = $simpla->variants->get_variant(intval($purchase->variant_id));
-	if(empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount))
-	{
-		die("Нехватка товара $purchase->product_name $purchase->variant_name");
-	}
+if($settings['robokassa_check_availability']) {
+    $purchases = $simpla->orders->get_purchases(array('order_id' => intval($order->id)));
+    foreach ($purchases as $purchase) {
+        $variant = $simpla->variants->get_variant(intval($purchase->variant_id));
+        if (empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount)) {
+            die("Нехватка товара $purchase->product_name $purchase->variant_name");
+        }
+    }
+}
+
+// Данные по заказу
+$order_update = [
+    'paid' => 1,
+    'payment_date' => date('Y-m-d H:i:s')
+];
+
+// Сменим статус заказа после оплаты
+if ($settings['robokassa_order_status']) {
+    $order_update['status'] = $settings['robokassa_order_status'];
 }
        
 // Установим статус оплачен
-$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+$simpla->orders->update_order(intval($order->id), $order_update);
 
 // Спишем товары  
 $simpla->orders->close(intval($order->id));
+
+// Отправим уведомление на email
 $simpla->notify->email_order_user(intval($order->id));
 $simpla->notify->email_order_admin(intval($order->id));
 
-
-die("OK".$order_id."\n");
+header('Location: ' . $simpla->config->root_url . '/order/' . $order->url, true, 302);
+exit();
